@@ -193,6 +193,21 @@ function isMobile() {
            (navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && /MacIntel/.test(navigator.platform));
 }
 
+function playProtoss2AfterJimmy() {
+    console.log('Jimmy finished, starting Protoss 2...');
+    protoss2Music.currentTime = 0;
+    protoss2Music.volume = 0.6;
+    const protoss2Promise = protoss2Music.play();
+    
+    if (protoss2Promise !== undefined) {
+        protoss2Promise.then(() => {
+            console.log('Protoss 2 music started playing after Jimmy');
+        }).catch(e => {
+            console.log('Protoss 2 music failed to play after Jimmy:', e);
+        });
+    }
+}
+
 function startMusicSequence() {
     if (musicStarted) return;
     musicStarted = true;
@@ -222,26 +237,6 @@ function startMusicSequence() {
                 }
             });
             
-            setTimeout(() => {
-                if (mobile) {
-                    console.log('Mobile detected - stopping protoss music before playing Jimmy');
-                    protossMusic.pause();
-                    protossMusic.currentTime = 0;
-                }
-                
-                jimmyMusic.volume = 1.0;
-                const jimmyPromise = jimmyMusic.play();
-                
-                if (jimmyPromise !== undefined) {
-                    jimmyPromise.then(() => {
-                        console.log('Jimmy music started playing at 100% volume');
-                    }).catch(e => {
-                        console.log('Jimmy music failed to play:', e);
-                        console.log('Jimmy music current time:', jimmyMusic.currentTime);
-                        console.log('Jimmy music ready state:', jimmyMusic.readyState);
-                    });
-                }
-            }, 8000);
             
         }).catch(e => {
             console.log('Protoss music failed to play:', e);
@@ -251,7 +246,6 @@ function startMusicSequence() {
         });
     }
 }
-
 document.addEventListener('click', () => {
     // Reset the flag to allow retries
     musicStarted = false;
@@ -309,6 +303,7 @@ function startCelebration() {
     setTimeout(() => {
         bottomText.classList.add('slide-in');
     }, 9000);
+
 }
 
 const backgroundImage = new Image();
@@ -319,4 +314,33 @@ window.addEventListener('load', () => {
     console.log('Page loaded, checking audio readiness...');
     console.log('Protoss music ready state:', protossMusic.readyState);
     console.log('Jimmy music ready state:', jimmyMusic.readyState);
+    
+    const playMessageBtn = document.getElementById('playMessageBtn');
+    if (playMessageBtn) {
+        playMessageBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            console.log('Play message button clicked!');
+            
+            protossMusic.pause();
+            protossMusic.currentTime = 0;
+            protoss2Music.pause();
+            protoss2Music.currentTime = 0;
+            
+            jimmyMusic.currentTime = 0;
+            jimmyMusic.volume = 1.0;
+            
+            jimmyMusic.removeEventListener('ended', playProtoss2AfterJimmy);
+            jimmyMusic.addEventListener('ended', playProtoss2AfterJimmy);
+            
+            const jimmyPromise = jimmyMusic.play();
+            
+            if (jimmyPromise !== undefined) {
+                jimmyPromise.then(() => {
+                    console.log('Jimmy message playing from button click');
+                }).catch(e => {
+                    console.log('Failed to play Jimmy message from button:', e);
+                });
+            }
+        });
+    }
 });

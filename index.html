@@ -45,9 +45,18 @@
     <div id="celebration">
         <h1 id="topText">Happy Birthday</h1>
         <h1 id="bottomText">Rich!!!</h1>
+        <button id="playMessageBtn" class="play-message-btn">
+            <span class="play-icon">▶</span>
+            Click Here To Play Message
+            <span class="sound-icon">🔊</span>
+        </button>
         <canvas id="fireworksCanvas"></canvas>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        const scriptElement = document.createElement('script');
+        scriptElement.src = 'script.js?v=' + Date.now() + Math.random().toString(36).substr(2, 9);
+        document.head.appendChild(scriptElement);
+    </script>
 </body>
 </html>
