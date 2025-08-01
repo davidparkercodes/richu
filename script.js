@@ -188,11 +188,18 @@ const jimmyMusic = document.getElementById('jimmyMusic');
 const protoss2Music = document.getElementById('protoss2Music');
 let musicStarted = false;
 
+function isMobile() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+           (navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && /MacIntel/.test(navigator.platform));
+}
+
 function startMusicSequence() {
     if (musicStarted) return;
     musicStarted = true;
     
     console.log('Attempting to start music sequence...');
+    const mobile = isMobile();
+    console.log('Mobile detected:', mobile);
     
     protossMusic.volume = 0.6;
     const protossPromise = protossMusic.play();
@@ -216,6 +223,12 @@ function startMusicSequence() {
             });
             
             setTimeout(() => {
+                if (mobile) {
+                    console.log('Mobile detected - stopping protoss music before playing Jimmy');
+                    protossMusic.pause();
+                    protossMusic.currentTime = 0;
+                }
+                
                 jimmyMusic.volume = 1.0;
                 const jimmyPromise = jimmyMusic.play();
                 
